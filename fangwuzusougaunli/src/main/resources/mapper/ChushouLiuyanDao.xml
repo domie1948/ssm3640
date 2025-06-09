@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChushouLiuyanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.chushou_id as chushouId
+        ,a.yonghu_id as yonghuId
+        ,a.chushou_liuyan_content as chushouLiuyanContent
+        ,a.reply_content as replyContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ChushouLiuyanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,chushou.chushou_name as chushouName
+        ,chushou.chushou_types as chushouTypes
+        ,chushou.huixing_types as huixingTypes
+        ,chushou.chushou_mianji as chushouMianji
+        ,chushou.chushou_money as chushouMoney
+        ,chushou.chushou_sum_money as chushouSumMoney
+        ,chushou.chushou_photo as chushouPhoto
+        ,chushou.chushou_weizhi as chushouWeizhi
+        ,chushou.fangdong_id as fangdongId
+        ,chushou.chushou_content as chushouContent
+        ,chushou.insert_time as insertTime
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_photo as yonghuPhoto
+
+        FROM chushou_liuyan  a
+        left JOIN chushou chushou ON a.chushou_id = chushou.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.chushouId != null">
+                and a.chushou_id = #{params.chushouId}
+            </if>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test=" params.chushouLiuyanContent != '' and params.chushouLiuyanContent != null and params.chushouLiuyanContent != 'null' ">
+                and a.chushou_liuyan_content like CONCAT('%',#{params.chushouLiuyanContent},'%')
+            </if>
+            <if test=" params.replyContent != '' and params.replyContent != null and params.replyContent != 'null' ">
+                and a.reply_content like CONCAT('%',#{params.replyContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+            <if test=" params.chushouName != '' and params.chushouName != null and params.chushouName != 'null' ">
+                and chushou.chushou_name like CONCAT('%',#{params.chushouName},'%')
+            </if>
+            <if test="params.huixingTypes != null">
+                and chushou.huixing_types = #{params.huixingTypes}
+            </if>
+
+            <if test="params.chushouMianjiStart != null ">
+                <![CDATA[  and chushou.chushou_mianji >= #{params.chushouMianjiStart}   ]]>
+            </if>
+            <if test="params.chushouMianjiEnd != null ">
+                <![CDATA[  and chushou.chushou_mianji <= #{params.chushouMianjiEnd}   ]]>
+            </if>
+            <if test="params.chushouMoneyStart != null ">
+                <![CDATA[  and chushou.chushou_money >= #{params.chushouMoneyStart}   ]]>
+            </if>
+            <if test="params.chushouMoneyEnd != null ">
+                <![CDATA[  and chushou.chushou_money <= #{params.chushouMoneyEnd}   ]]>
+            </if>
+            <if test="params.chushouSumMoneyStart != null ">
+                <![CDATA[  and chushou.chushou_sum_money >= #{params.chushouSumMoneyStart}   ]]>
+            </if>
+            <if test="params.chushouSumMoneyEnd != null ">
+                <![CDATA[  and chushou.chushou_sum_money <= #{params.chushouSumMoneyEnd}   ]]>
+            </if>
+            <if test=" params.chushouWeizhi != '' and params.chushouWeizhi != null and params.chushouWeizhi != 'null' ">
+                and chushou.chushou_weizhi like CONCAT('%',#{params.chushouWeizhi},'%')
+            </if>
+            <if test="params.fangdongId != null">
+                and chushou.fangdong_id = #{params.fangdongId}
+            </if>
+            <if test=" params.chushouContent != '' and params.chushouContent != null and params.chushouContent != 'null' ">
+                and chushou.chushou_content like CONCAT('%',#{params.chushouContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chushou.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chushou.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>

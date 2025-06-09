@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChuzuOrderDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.chuzu_id as chuzuId
+        ,a.yonghu_id as yonghuId
+        ,a.chuzu_order_day as chuzuOrderDay
+        ,a.chuzu_order_money as chuzuOrderMoney
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ChuzuOrderView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,chuzu.chuzu_name as chuzuName
+        ,chuzu.chuzu_types as chuzuTypes
+        ,chuzu.huixing_types as huixingTypes
+        ,chuzu.chuzu_mianji as chuzuMianji
+        ,chuzu.chuzu_money as chuzuMoney
+        ,chuzu.chuzu_photo as chuzuPhoto
+        ,chuzu.chuzu_weizhi as chuzuWeizhi
+        ,chuzu.fangdong_id as fangdongId
+        ,chuzu.chuzu_content as chuzuContent
+        ,chuzu.insert_time as insertTime
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.sex_types as sexTypes
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_photo as yonghuPhoto
+
+        FROM chuzu_order  a
+        left JOIN chuzu chuzu ON a.chuzu_id = chuzu.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.chuzuId != null">
+                and a.chuzu_id = #{params.chuzuId}
+            </if>
+            <if test="params.yonghuId != null">
+                and a.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test="params.chuzuOrderDayStart != null">
+                <![CDATA[  and a.chuzu_order_day >= #{params.chuzuOrderDayStart}   ]]>
+            </if>
+            <if test="params.chuzuOrderDayEnd != null">
+                <![CDATA[  and a.chuzu_order_day <= #{params.chuzuOrderDayEnd}   ]]>
+            </if>
+            <if test="params.chuzuOrderMoneyStart != null ">
+                <![CDATA[  and a.chuzu_order_money >= #{params.chuzuOrderMoneyStart}   ]]>
+            </if>
+            <if test="params.chuzuOrderMoneyEnd != null ">
+                <![CDATA[  and a.chuzu_order_money <= #{params.chuzuOrderMoneyEnd}   ]]>
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+            <if test=" params.chuzuName != '' and params.chuzuName != null and params.chuzuName != 'null' ">
+                and chuzu.chuzu_name like CONCAT('%',#{params.chuzuName},'%')
+            </if>
+            <if test="params.huixingTypes != null">
+                and chuzu.huixing_types = #{params.huixingTypes}
+            </if>
+
+            <if test="params.chuzuMianjiStart != null ">
+                <![CDATA[  and chuzu.chuzu_mianji >= #{params.chuzuMianjiStart}   ]]>
+            </if>
+            <if test="params.chuzuMianjiEnd != null ">
+                <![CDATA[  and chuzu.chuzu_mianji <= #{params.chuzuMianjiEnd}   ]]>
+            </if>
+            <if test="params.chuzuMoneyStart != null ">
+                <![CDATA[  and chuzu.chuzu_money >= #{params.chuzuMoneyStart}   ]]>
+            </if>
+            <if test="params.chuzuMoneyEnd != null ">
+                <![CDATA[  and chuzu.chuzu_money <= #{params.chuzuMoneyEnd}   ]]>
+            </if>
+            <if test=" params.chuzuWeizhi != '' and params.chuzuWeizhi != null and params.chuzuWeizhi != 'null' ">
+                and chuzu.chuzu_weizhi like CONCAT('%',#{params.chuzuWeizhi},'%')
+            </if>
+            <if test="params.fangdongId != null">
+                and chuzu.fangdong_id = #{params.fangdongId}
+            </if>
+            <if test=" params.chuzuContent != '' and params.chuzuContent != null and params.chuzuContent != 'null' ">
+                and chuzu.chuzu_content like CONCAT('%',#{params.chuzuContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chuzu.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chuzu.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test="params.sexTypes != null">
+                and yonghu.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+        </where>
+        order by a.${params.orderBy} desc
+    </select>
+
+</mapper>
